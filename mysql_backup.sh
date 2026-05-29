@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# mysql_backup.sh - 全量备份 MySQL 数据库 nanmeihao
+# mysql_backup.sh - 全量备份 MySQL 数据库 nanmeihao 并上传至阿里云 OSS
 #
 # 用法: ./mysql_backup.sh
 # 定时任务示例 (每天凌晨 3:00 执行):
@@ -10,63 +10,56 @@
 set -euo pipefail
 
 # ========== 配置 ==========
-BACKUP_DIR="/root/mysqlAutoBackup/backups"
-DB_NAME="nanmeihao"
+# 临时本地目录（备份生成后即上传至 OSS，本地文件会立即清理）
+TEMP_DIR="/root/mysqlAutoBackup/backups"
+OSS_BUCKET="oss://nannianghaowu-mysql-backup"
+DB_NAME="potato_timer"
 LOG_FILE="/root/mysqlAutoBackup/backup.log"
 MYSQL_HOST="localhost"
 MYSQL_USER="root"
 MYSQL_PASSWORD="hh20061202"
 
-# 保留天数 (超过此天数的备份会被清理)
-RETENTION_DAYS=7
-
 # ========== 日志函数 ==========
 log() {
-    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*"
+    echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" | tee -a "${LOG_FILE}"
 }
 
 # ========== 主流程 ==========
 log "========== 开始备份数据库: ${DB_NAME} =========="
 
-# 检查备份目录
-if [[ ! -d "${BACKUP_DIR}" ]]; then
-    log "创建备份目录: ${BACKUP_DIR}"
-    mkdir -p "${BACKUP_DIR}"
-fi
+mkdir -p "${TEMP_DIR}"
 
-# 生成备份文件名: nanmeihao_20260529_030000.sql.gz
+# 生成备份文件名
 TIMESTAMP=$(date '+%Y%m%d_%H%M%S')
-BACKUP_FILE="${BACKUP_DIR}/${DB_NAME}_${TIMESTAMP}.sql.gz"
+LOCAL_BACKUP="${TEMP_DIR}/${DB_NAME}_${TIMESTAMP}.sql.gz"
 
-# 执行备份
-log "正在导出数据库到: ${BACKUP_FILE}"
+# 导出数据库
+log "正在导出数据库到临时文件..."
 mysqldump -h"${MYSQL_HOST}" -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" \
     "${DB_NAME}" \
     | gzip -9 \
-    > "${BACKUP_FILE}"
+    > "${LOCAL_BACKUP}"
 
-# 验证备份文件
-if [[ -s "${BACKUP_FILE}" ]]; then
-    SIZE=$(du -h "${BACKUP_FILE}" | cut -f1)
-    log "备份成功: ${BACKUP_FILE} (${SIZE})"
-else
-    log "错误: 备份文件为空，备份可能失败"
+# 验证本地文件
+if [[ ! -s "${LOCAL_BACKUP}" ]]; then
+    log "错误: 备份文件为空，备份失败"
     exit 1
 fi
 
-# 清理过期备份
-log "清理超过 ${RETENTION_DAYS} 天的旧备份..."
-DELETED_COUNT=0
-while IFS= read -r old_backup; do
-    rm -f "${old_backup}"
-    log "已删除旧备份: ${old_backup}"
-    ((DELETED_COUNT++)) || true
-done < <(find "${BACKUP_DIR}" -maxdepth 1 -name "${DB_NAME}_*.sql.gz" -type f -mtime +"${RETENTION_DAYS}")
+SIZE=$(du -h "${LOCAL_BACKUP}" | cut -f1)
+log "本地备份生成成功: ${LOCAL_BACKUP} (${SIZE})"
 
-if [[ "${DELETED_COUNT}" -eq 0 ]]; then
-    log "无需清理旧备份"
+# 上传至 OSS
+log "正在上传至 OSS: ${OSS_BUCKET}/"
+if ossutil cp "${LOCAL_BACKUP}" "${OSS_BUCKET}/" --force; then
+    log "OSS 上传成功: ${OSS_BUCKET}/${DB_NAME}_${TIMESTAMP}.sql.gz"
 else
-    log "共清理 ${DELETED_COUNT} 个旧备份"
+    log "错误: OSS 上传失败，请检查 ossutil 配置和网络连接"
+    exit 1
 fi
+
+# 上传成功后立即删除本地临时文件
+rm -f "${LOCAL_BACKUP}"
+log "本地临时文件已清理"
 
 log "========== 备份完成 =========="
