@@ -13,7 +13,7 @@ set -euo pipefail
 # 临时本地目录（备份生成后即上传至 OSS，本地文件会立即清理）
 TEMP_DIR="/root/mysqlAutoBackup/backups"
 OSS_BUCKET="oss://nannianghaowu-mysql-backup"
-DB_NAME="potato_timer"
+DB_NAME="nanmeihao"
 LOG_FILE="/root/mysqlAutoBackup/backup.log"
 MYSQL_HOST="localhost"
 MYSQL_USER="root"

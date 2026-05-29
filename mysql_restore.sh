@@ -16,7 +16,7 @@ set -euo pipefail
 # ========== 配置 ==========
 TEMP_DIR="/root/mysqlAutoBackup/backups"
 OSS_BUCKET="oss://nannianghaowu-mysql-backup"
-DB_NAME="potato_timer"
+DB_NAME="nanmeihao"
 MYSQL_HOST="localhost"
 MYSQL_USER="root"
 MYSQL_PASSWORD="hh20061202"
