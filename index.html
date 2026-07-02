@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>域名更换通知 - 小南娘好物推荐</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+      padding: 20px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 24px;
+      box-shadow: 0 20px 60px rgba(233, 30, 99, 0.15);
+      padding: 48px 40px;
+      max-width: 480px;
+      width: 100%;
+      text-align: center;
+      animation: fadeInUp 0.6s ease-out;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #ec407a, #d81b60);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 28px;
+      box-shadow: 0 8px 24px rgba(233, 30, 99, 0.35);
+    }
+
+    .icon svg {
+      width: 40px;
+      height: 40px;
+      fill: #fff;
+    }
+
+    h1 {
+      font-size: 24px;
+      font-weight: 700;
+      color: #880e4f;
+      margin-bottom: 16px;
+      letter-spacing: 2px;
+    }
+
+    .divider {
+      width: 50px;
+      height: 3px;
+      background: linear-gradient(135deg, #ec407a, #f48fb1);
+      border-radius: 2px;
+      margin: 0 auto 24px;
+    }
+
+    p {
+      font-size: 16px;
+      color: #555;
+      line-height: 1.8;
+      margin-bottom: 12px;
+    }
+
+    .highlight {
+      display: inline-block;
+      background: pink;
+      color: #c2185b;
+      font-weight: 700;
+      padding: 4px 16px;
+      border-radius: 8px;
+      font-size: 18px;
+      margin: 4px 0;
+      letter-spacing: 1px;
+    }
+
+    .sub-text {
+      font-size: 13px;
+      color: #999;
+      margin-top: 8px;
+      margin-bottom: 36px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, #ec407a, #d81b60);
+      color: #fff;
+      border: none;
+      padding: 16px 40px;
+      font-size: 17px;
+      font-weight: 600;
+      border-radius: 50px;
+      cursor: pointer;
+      text-decoration: none;
+      box-shadow: 0 8px 24px rgba(233, 30, 99, 0.35);
+      transition: all 0.3s ease;
+      letter-spacing: 1px;
+    }
+
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 32px rgba(233, 30, 99, 0.45);
+    }
+
+    .btn:active {
+      transform: translateY(-1px);
+    }
+
+    .btn svg {
+      width: 20px;
+      height: 20px;
+      fill: #fff;
+      transition: transform 0.3s ease;
+    }
+
+    .btn:hover svg {
+      transform: translateX(4px);
+    }
+
+    .footer {
+      margin-top: 32px;
+      font-size: 12px;
+      color: #bbb;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>请收藏新的网址</h1>
+    <p>为了方便记忆，小南娘好物推荐网站域名已更换为</p>
+    <p><span class="highlight">https://nnhaowu.com</span></p>
+    <a href="https://nnhaowu.com" class="btn">
+      立即前往新网址
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/>
+      </svg>
+    </a>
+  </div>
+</body>
+</html>

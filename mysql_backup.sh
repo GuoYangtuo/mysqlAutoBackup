@@ -19,6 +19,15 @@ MYSQL_HOST="localhost"
 MYSQL_USER="root"
 MYSQL_PASSWORD="hh20061202"
 
+# ========== 表过滤配置 ==========
+# 留空表示备份全部表
+# 排除某些表：写表名，多个用空格分隔，例如 EXCLUDE_TABLES="log_table temp_table cache_table"
+# 只备份某些表：注释掉 EXCLUDE_TABLES，取消下面的 ONLY_TABLES 并填写表名
+# 当 ONLY_TABLES 有值时，EXCLUDE_TABLES 会被忽略，会只备份指定的那几张表。当 ONLY_TABLES 为空时才使用 EXCLUDE_TABLES 排除表。
+EXCLUDE_TABLES=""
+# ONLY_TABLES="table1 table2 table3"
+ONLY_TABLES=""
+
 # ========== 日志函数 ==========
 log() {
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" | tee -a "${LOG_FILE}"
@@ -33,12 +42,29 @@ mkdir -p "${TEMP_DIR}"
 TIMESTAMP=$(date '+%Y%m%d_%H%M%S')
 LOCAL_BACKUP="${TEMP_DIR}/${DB_NAME}_${TIMESTAMP}.sql.gz"
 
+# 构造 mysqldump 命令参数
+DUMP_OPTS=(
+    -h"${MYSQL_HOST}"
+    -u"${MYSQL_USER}"
+    -p"${MYSQL_PASSWORD}"
+    "${DB_NAME}"
+)
+
+# 只备份指定表
+if [[ -n "${ONLY_TABLES}" ]]; then
+    DUMP_OPTS+=(${ONLY_TABLES})
+else
+    # 排除指定表
+    if [[ -n "${EXCLUDE_TABLES}" ]]; then
+        for tbl in ${EXCLUDE_TABLES}; do
+            DUMP_OPTS+=(--ignore-table="${DB_NAME}.${tbl}")
+        done
+    fi
+fi
+
 # 导出数据库
 log "正在导出数据库到临时文件..."
-mysqldump -h"${MYSQL_HOST}" -u"${MYSQL_USER}" -p"${MYSQL_PASSWORD}" \
-    "${DB_NAME}" \
-    | gzip -9 \
-    > "${LOCAL_BACKUP}"
+mysqldump "${DUMP_OPTS[@]}" | gzip -9 > "${LOCAL_BACKUP}"
 
 # 验证本地文件
 if [[ ! -s "${LOCAL_BACKUP}" ]]; then
