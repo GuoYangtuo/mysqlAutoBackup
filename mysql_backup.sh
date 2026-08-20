@@ -24,7 +24,7 @@ MYSQL_PASSWORD="hh20061202"
 # 排除某些表：写表名，多个用空格分隔，例如 EXCLUDE_TABLES="log_table temp_table cache_table"
 # 只备份某些表：注释掉 EXCLUDE_TABLES，取消下面的 ONLY_TABLES 并填写表名
 # 当 ONLY_TABLES 有值时，EXCLUDE_TABLES 会被忽略，会只备份指定的那几张表。当 ONLY_TABLES 为空时才使用 EXCLUDE_TABLES 排除表。
-EXCLUDE_TABLES=""
+EXCLUDE_TABLES="daily_visits user_activities"
 # ONLY_TABLES="table1 table2 table3"
 ONLY_TABLES=""
 
